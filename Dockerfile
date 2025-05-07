@@ -79,4 +79,20 @@ COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY wallpaper.png /wallpaper.png
 
+# Disable power manager to prevent error dialogs
+RUN mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
+COPY xfce4-power-manager.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
+
+# Add script to completely disable power manager
+COPY disable-power-manager.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/disable-power-manager.sh
+
+# Create startup directory and add power manager disabling to autostart
+RUN mkdir -p /etc/xdg/autostart
+RUN echo "[Desktop Entry]\nType=Application\nName=DisablePowerManager\nExec=/usr/local/bin/disable-power-manager.sh\nTerminal=false\nHidden=false" > /etc/xdg/autostart/disable-power-manager.desktop
+
+# Remove power manager from XFCE panel settings
+RUN mkdir -p /etc/xdg/xfce4/panel
+RUN sed -i '/power-manager/d' /etc/xdg/xfce4/panel/* 2>/dev/null || true
+
 ENTRYPOINT [ "/bin/bash", "/entrypoint.sh" ]

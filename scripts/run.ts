@@ -5,7 +5,9 @@ async function connectToRemoteChrome() {
     console.log("Connecting to remote Chrome debugger...");
 
     // Connect to the Chrome instance running in Docker
-    const browser = await chromium.connectOverCDP("http://localhost:9222");
+    const browser = await chromium.connectOverCDP(
+      "https://chrome-template.fly.dev:9222"
+    );
     console.log("Connected successfully!");
 
     // Use the default context
